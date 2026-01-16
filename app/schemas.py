@@ -21,8 +21,9 @@ class CleaningConfig(BaseModel):
     fix_phones: bool = False
     fix_emails: bool = False
     remove_special_chars: bool = False
-    
-    # MUST BE HERE
     anonymize_pii: bool = False 
+    
+    # NEW: List of columns to skip entirely
+    ignore_columns: List[str] = [] 
     
     fill_missing: Dict[str, str] = {}

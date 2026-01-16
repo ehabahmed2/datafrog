@@ -70,6 +70,36 @@ async function handleUpload(e) {
         colSelect.appendChild(option);
       });
     }
+    // ... (keep existing populate logic for mainSelect and dedupe-col) ...
+
+    // 2. NEW: Populate "Ignore Columns" Checkboxes
+    const ignoreList = document.getElementById("ignore-col-list");
+    ignoreList.innerHTML = "";
+
+    data.analysis.columns.forEach((col) => {
+      const label = document.createElement("label");
+      label.style.fontSize = "0.85rem";
+      label.style.display = "flex";
+      label.style.alignItems = "center";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = col;
+      checkbox.style.marginRight = "5px";
+
+      // Auto-check columns that usually shouldn't be touched
+      if (
+        ["id", "address", "desc", "comment"].some((k) =>
+          col.toLowerCase().includes(k)
+        )
+      ) {
+        checkbox.checked = true;
+      }
+
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(col));
+      ignoreList.appendChild(label);
+    });
 
     dropContent.innerHTML = `
         <p style="color:#059669; font-weight:bold;">✅ ${file.name}</p>
@@ -150,11 +180,16 @@ function getConfig() {
   const mergeKeyMain = document.getElementById("merge-key-main");
   const mergeKeySec = document.getElementById("merge-key-sec");
   const dedupeColEl = document.getElementById("dedupe-col");
+  const ignored = [];
+  document.querySelectorAll("#ignore-col-list input:checked").forEach((cb) => {
+    ignored.push(cb.value);
+  });
 
   return {
     standardize_columns: document.getElementById("opt-standardize").checked,
     drop_empty_rows: document.getElementById("opt-empty-rows").checked,
     clean_arabic: document.getElementById("opt-arabic").checked,
+    standardize_columns: document.getElementById("opt-standardize").checked,
 
     // DEDUPE
     remove_duplicates: document.getElementById("opt-duplicates").checked,
@@ -175,6 +210,10 @@ function getConfig() {
     fix_phones: document.getElementById("opt-phones").checked,
     fix_emails: document.getElementById("opt-emails").checked,
     remove_special_chars: document.getElementById("opt-special").checked,
+    fill_missing: {
+      numeric: document.getElementById("opt-numeric-fill").value,
+    },
+    ignore_columns: ignored,
     fill_missing: {
       numeric: document.getElementById("opt-numeric-fill").value,
     },
