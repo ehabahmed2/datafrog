@@ -1,7 +1,7 @@
 name: Build Mac App
 
 on:
-  workflow_dispatch: # Allows you to click a "Run" button manually
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,13 +23,12 @@ jobs:
     - name: Build Mac Application
       run: |
         # Mac Build Command
-        # Notice the separator is ':' instead of ';' for add-data
-        # We skip the .ico icon because Mac requires .icns (complex to make). 
-        # It will use a default Python rocket icon for now.
+        # REMOVED: --splash (Not supported on Mac)
+        # REMOVED: --icon (Requires .icns file, skipping for now)
+        # Separator for add-data is ':'
         
         pyinstaller --noconfirm --onefile --windowed \
           --name "DataFrog" \
-          --splash "splash.png" \
           --add-data "app/static:app/static" \
           --hidden-import "uvicorn.logging" \
           --hidden-import "uvicorn.loops" \
