@@ -48,7 +48,9 @@ def validate_email(val):
 def remove_special_characters(val):
     if pd.isna(val): return val
     s = str(val)
-    return re.sub(r'[^\w\s\.\-@\u0600-\u06FF]', '', s).strip()
+    # FIX: Expanded regex to allow URL chars (: / ? = &) and JSON chars ({ } [ ] ' ") and Parentheses
+    # This preserves websites, social media objects, and basic punctuation while removing weird noise.
+    return re.sub(r'[^\w\s\.\-@:/\(\)\{\}\[\]\'\"\&\?\=\+\u0600-\u06FF]', '', s).strip()
 
 def mask_email(val):
     s = str(val).strip()
@@ -139,7 +141,9 @@ def clean_dataframe(df: pd.DataFrame, config: dict, dry_run=False, exclude_cols=
         count = 0
         for col in df.columns:
             if col in exclude_cols: continue
+            # Avoid cleaning fields that look numeric but aren't money (like Year or ID)
             if any(x in col.lower() for x in ['email', 'mail', 'phone', 'id', 'date', 'year', 'day']): continue
+            
             if df[col].dtype == 'object':
                 sample = "".join(df[col].dropna().astype(str).head(15).tolist()).lower()
                 if re.search(r'[\$€£]|\d\s?[kmb]\b|\d,\d', sample):
@@ -148,7 +152,7 @@ def clean_dataframe(df: pd.DataFrame, config: dict, dry_run=False, exclude_cols=
         if count > 0:
             report_log.append(f"💰 Parsed currency/numbers in {count} columns")
 
-    # 5. Emails
+    # 5/6/7/8 Specific Cleaners
     if config.get("fix_emails"):
         report_log.append("📧 Validated emails")
         for col in df.columns:
@@ -156,7 +160,6 @@ def clean_dataframe(df: pd.DataFrame, config: dict, dry_run=False, exclude_cols=
             if any(k in col.lower() for k in ["email", "mail"]):
                 df[col] = df[col].apply(validate_email)
 
-    # 6. Phones
     if config.get("fix_phones"):
         report_log.append("📱 Standardized phone numbers")
         for col in df.columns:
@@ -164,14 +167,12 @@ def clean_dataframe(df: pd.DataFrame, config: dict, dry_run=False, exclude_cols=
             if any(k in col.lower() for k in ["phone", "mobile", "tel", "cell"]):
                 df[col] = df[col].apply(clean_phone_number)
 
-    # 7. Special Chars
     if config.get("remove_special_chars"):
-        report_log.append("🧹 Removed special characters")
+        report_log.append("🧹 Removed special characters (Preserving URLs/JSON)")
         for col in df.select_dtypes(include=['object']).columns:
             if col in exclude_cols: continue
             df[col] = df[col].apply(remove_special_characters)
 
-    # 8. Arabic
     if config.get("clean_arabic"):
         report_log.append("📝 Normalized Arabic text")
         for col in df.select_dtypes(include=['object']).columns:
