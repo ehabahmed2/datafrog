@@ -1,13 +1,13 @@
-# ⚒️ DataForge Lite
+# ⚒️ DataFrog
 **Secure. Offline. Intelligent Data Cleaning.**
 
-DataForge Lite is a production-grade, local-only tool designed to clean messy Excel and CSV datasets instantly. It combines robust rule-based cleaning with **AI-powered Fuzzy Logic**, all without your data ever leaving your computer.
+DataFrog is a production-grade, local-only tool designed to clean messy Excel and CSV datasets instantly. It combines robust rule-based cleaning with **AI-powered Fuzzy Logic**, all without your data ever leaving your computer.
 
 ![License](https://img.shields.io/badge/license-MIT-blue) ![Python](https://img.shields.io/badge/python-3.10%2B-yellow) ![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline-green)
 
 ---
 
-## 🚀 Why DataForge Lite?
+## 🚀 Why DataFrog?
 
 *   **100% Privacy:** No cloud APIs. No databases. Your files never leave your machine. Perfect for GDPR/HIPAA sensitive data.
 *   **The "Killer" Features:** 
@@ -60,8 +60,8 @@ DataForge Lite is a production-grade, local-only tool designed to clean messy Ex
 
 1.  **Clone the Repo**
     ```bash
-    git clone https://github.com/your-repo/dataforge-lite.git
-    cd dataforge-lite
+    git clone https://github.com/ehabahmed2/DataFrog.git
+    cd DataFrog
     ```
 
 2.  **Create Virtual Environment**
@@ -93,7 +93,7 @@ Want to send this tool to a client who doesn't have Python? Build a standalone e
     ```
 2.  Run the build command (Windows):
     ```bash
-    pyinstaller --noconfirm --onefile --windowed --name "DataForgeLite" --add-data "app/static;app/static" run.py
+    pyinstaller --noconfirm --onefile --windowed --name "DataFrog" --add-data "app/static;app/static" run.py
     ```
     *(Note: On Mac/Linux, replace `;` with `:` in the add-data flag)*.
 
@@ -114,7 +114,7 @@ You are free to use, modify, and distribute this software.
 --- 
 ### ⭐ Final Note
 
-DataForge Lite is not a toy script.
+DataFrog is not a toy script.
 It’s a real-world, sellable, production-grade tool built for people who care about:
 
 Data privacy
