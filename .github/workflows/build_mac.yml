@@ -1,0 +1,48 @@
+name: Build Mac App
+
+on:
+  workflow_dispatch: # Allows you to click a "Run" button manually
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pyinstaller requests
+
+    - name: Build Mac Application
+      run: |
+        # Mac Build Command
+        # Notice the separator is ':' instead of ';' for add-data
+        # We skip the .ico icon because Mac requires .icns (complex to make). 
+        # It will use a default Python rocket icon for now.
+        
+        pyinstaller --noconfirm --onefile --windowed \
+          --name "DataFrog" \
+          --splash "splash.png" \
+          --add-data "app/static:app/static" \
+          --hidden-import "uvicorn.logging" \
+          --hidden-import "uvicorn.loops" \
+          --hidden-import "uvicorn.loops.auto" \
+          --hidden-import "uvicorn.protocols" \
+          --hidden-import "uvicorn.protocols.http" \
+          --hidden-import "uvicorn.protocols.http.auto" \
+          --hidden-import "uvicorn.lifespan" \
+          --hidden-import "uvicorn.lifespan.on" \
+          run.py
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: DataFrog-Mac
+        path: dist/DataFrog.app

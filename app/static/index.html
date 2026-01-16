@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataFrog</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Inside <header> -->
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+                <h1>DataFrog</h1>
+                <p>Secure, Offline, Portable Data Cleaning</p>
+            </div>
+            <button id="btn-quit" style="background: #ef4444;color: white;border: none;padding: 10px 15px;border-radius: 5px;cursor: pointer;font-size: 0.9rem;height: 50px;">
+                ❌ Quit App
+            </button>
+        </header>
+
+        <!-- Upload Step -->
+        <section id="upload-section">
+            <div class="drop-zone" id="drop-zone">
+                <div id="drop-content">
+                    <p style="font-size: 1.2rem; margin-bottom: 10px;">📄 Drag & Drop CSV or XLSX file</p>
+                    <p style="font-size: 0.9rem; color: #9ca3af;">or click to browse</p>
+                </div>
+                <input type="file" id="file-input" hidden accept=".csv,.xlsx,.xls">
+            </div>
+        </section>
+
+        <!-- Configuration Step -->
+        <section id="config-section" class="hidden">
+
+            <!-- Group 0: THE MERGER -->
+            <div class="options-group">
+                <h3>📂 Data Enrichment (Smart VLOOKUP)</h3>
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
+                    <p style="font-size: 0.85rem; margin-top:0; color:#166534;">
+                        <b>Note:</b> This acts like a Left Join. It adds columns from the Lookup File to matched rows in the Main File. It does <u>not</u> add new rows from the Lookup File.
+                    </p>
+                    
+                    <div id="merge-upload-area">
+                        <input type="file" id="sec-file-input" hidden accept=".csv,.xlsx,.xls">
+                        <button id="btn-upload-sec" class="secondary" style="font-size:0.85rem; padding: 5px 10px;">Upload Lookup File</button>
+                        <span id="sec-file-status" style="font-size: 0.85rem; margin-left: 10px; color: #666;">No file selected</span>
+                    </div>
+
+                    <div id="merge-config" class="hidden" style="margin-top: 15px; padding-top:10px; border-top:1px solid #dcfce7;">
+                        <label style="font-weight: bold; margin-bottom:10px; display:block;">
+                            <input type="checkbox" id="opt-merge"> Enable Merge
+                        </label>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <label style="font-size:0.9rem;">
+                                Main File Column:
+                                <select id="merge-key-main" style="width:100%"></select>
+                            </label>
+                            <label style="font-size:0.9rem;">
+                                Lookup File Column:
+                                <select id="merge-key-sec" style="width:100%"></select>
+                            </label>
+                        </div>
+                        
+                        <label style="font-size: 0.9rem; margin-top: 10px; color: #15803d; display:block;">
+                            <input type="checkbox" id="opt-merge-fuzzy"> 🧠 <b>Fuzzy Join</b>
+                        </label>
+                        
+                        <label style="font-size: 0.9rem; margin-top: 5px; color: #0f766e; display:block;">
+                            <input type="checkbox" id="opt-clean-merged" checked> ✨ Apply Cleaning to New Columns
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Group 1: Basic -->
+            <div class="options-group" style="margin-top: 30px;">
+                <h3>⚙️ Basic Cleaning</h3>
+                <div class="options-grid">
+                    <label><input type="checkbox" id="opt-standardize" checked> Standardize Columns</label>
+                    <label><input type="checkbox" id="opt-empty-rows" checked> Remove Empty Rows</label>
+                    <label><input type="checkbox" id="opt-arabic"> Clean Arabic Text</label>
+                </div>
+            </div>
+
+            <!-- Group 2: Deduplication -->
+            <div class="options-group">
+                <h3>👑 Smart Deduplication (AI)</h3>
+                <div style="background: #eff6ff; padding: 15px; border-radius: 8px; border: 1px solid #bfdbfe;">
+                    <label style="font-weight: bold; margin-bottom: 10px; display:flex; align-items:center;">
+                        <input type="checkbox" id="opt-duplicates"> Enable Deduplication
+                    </label>
+                    
+                    <div id="dedupe-options" class="hidden" style="margin-top: 10px; margin-left: 25px;">
+                        <label style="font-size: 0.9rem; display:block; margin-bottom:8px;">
+                            Target Column: 
+                            <select id="dedupe-col" style="padding: 4px; margin-left: 5px; border-radius: 4px; max-width: 200px;">
+                                <option value="ALL">ALL Columns (Entire Row)</option>
+                            </select>
+                        </label>
+                        <label style="font-size: 0.9rem; color: #b91c1c; display:flex; align-items:center;">
+                            <input type="checkbox" id="opt-fuzzy"> 🧠 Fuzzy Matching (Finds typos like "Ahmad" vs "Ahmed")
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Group 2.5: Security -->
+            <div class="options-group">
+                <h3>🛡️ Security & Privacy</h3>
+                <div style="background: #fef2f2; padding: 15px; border-radius: 8px; border: 1px solid #fecaca;">
+                    <label style="font-weight: bold; color: #991b1b; display:flex; align-items:center;">
+                        <input type="checkbox" id="opt-privacy"> Anonymize PII (Privacy Mode)
+                    </label>
+                    <p style="font-size: 0.85rem; color: #7f1d1d; margin: 5px 0 0 25px;">
+                        Masks Names, Emails, and Phones (e.g., a***@gmail.com).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Group 3: Advanced -->
+            <div class="options-group">
+                <h3>🔧 Advanced Toolkit</h3>
+                <div class="options-grid">
+                    <label title="Converts 4.2k -> 4200"><input type="checkbox" id="opt-money"> Fix Money ($/k)</label>
+                    <label title="Standardize to ISO Dates"><input type="checkbox" id="opt-dates"> Fix Dates</label>
+                    <label title="Keep digits only"><input type="checkbox" id="opt-phones"> Fix Phones</label>
+                    <label title="Validate format"><input type="checkbox" id="opt-emails"> Validate Emails</label>
+                    <label title="Remove noise chars"><input type="checkbox" id="opt-special"> Remove Noise</label>
+                </div>
+            </div>
+
+            <div class="options-group" style="border:none;">
+                <label style="font-weight: 600;">
+                    Fill Missing Numbers: 
+                    <select id="opt-numeric-fill" style="margin-left: 10px; padding: 5px;">
+                        <option value="">Do nothing</option>
+                        <option value="mean">Average (Mean)</option>
+                        <option value="zero">Zero (0)</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="actions">
+                <button id="btn-preview" class="secondary">👁️ Preview Changes</button>
+                <button id="btn-clean" class="primary">✨ Clean & Download</button>
+            </div>
+        </section>
+
+        <!-- Results / Diff Step -->
+        <section id="results-section" class="hidden" style="margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 30px;">
+            <div id="download-area" class="hidden" style="text-align: center; margin-bottom: 20px;">
+                <div id="status-msg" style="color: green; font-weight: bold; margin-bottom: 10px;"></div>
+                <a href="#" id="download-link" class="button primary">📥 Download Cleaned File</a>
+            </div>
+
+            <!-- NEW: PROCESSING LOG DISPLAY -->
+            <div style="background: #27272a; color: #4ade80; padding: 15px; border-radius: 8px; font-family: monospace; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                <h4 style="margin:0 0 10px 0; color: #fff; border-bottom: 1px solid #3f3f46; padding-bottom: 5px;">📟 Processing Log (What happened?)</h4>
+                <ul id="process-log" style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; max-height: 200px; overflow-y: auto;">
+                    <li>Waiting for action...</li>
+                </ul>
+            </div>
+
+            <h3 id="preview-title">Changes Summary</h3>
+            <div id="diff-stats" class="summary-cards"></div>
+            <div id="diff-viewer"></div>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
